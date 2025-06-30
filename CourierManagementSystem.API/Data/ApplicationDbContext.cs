@@ -10,7 +10,8 @@ namespace CourierManagementSystem.API.Data
         {
         }
 
-        // Add DbSets here later
+        public DbSet<CourierBooking> CourierBookings { get; set; }
+
     }
 }
 
