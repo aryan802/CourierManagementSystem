@@ -1,4 +1,5 @@
 ﻿using CourierManagementSystem.API.Data;
+using CourierManagementSystem.API.Helpers;
 using CourierManagementSystem.API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 // 3️⃣ Add Authentication & Authorization
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<JwtTokenHelper>();
 
 // 4️⃣ Add Swagger and Controllers
 builder.Services.AddControllers();
@@ -37,5 +39,17 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+// Call role seeding
+await CreateRolesAsync(app);
+
 app.Run();
 
+async Task CreateRolesAsync(IApplicationBuilder app)
+{
+    using var scope = app.ApplicationServices.CreateScope();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await CourierManagementSystem.API.Seeders.DefaultRoles.SeedAsync(roleManager);
+}
+
+// Call the method before app.Run();
+await CreateRolesAsync(app);
